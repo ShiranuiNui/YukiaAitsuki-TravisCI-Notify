@@ -3,10 +3,10 @@ using Xunit;
 
 namespace YukiaAitsuki_TravisCI_Notify.Tests
 {
-    public class UnitTest1
+    public class TravisCIWebHookReceiveControllerTest
     {
         [Fact]
-        public void Test1()
+        public void Configration_Get_Test()
         {
 
         }
