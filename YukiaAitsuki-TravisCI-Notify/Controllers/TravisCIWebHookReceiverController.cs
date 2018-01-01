@@ -11,19 +11,22 @@ namespace YukiaAitsuki_TravisCI_Notify.Controllers
 {
 
     [Route("receiver/[controller]")]
-    public class TravisCIWebHookReceiveController : Controller
+    public class TravisCIWebHookReceiverController : Controller
     {
         private IConfiguration configuration;
-        public TravisCIWebHookReceiveController(IConfiguration _configration)
+        public TravisCIWebHookReceiverController(IConfiguration _configration)
         {
             this.configuration = _configration;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromForm] string value)
         {
+            string debug_signature = this.Request.Headers["Signature"][0];
+            string payload = this.Request.Form["payload"];
+
             var verifier = new SignatureVerifier.SignatureVerifier();
-            var verifyResult = await verifier.Post(value, this.Request.Headers["Signature"]);
+            var verifyResult = await verifier.Post(payload, this.Request.Headers["Signature"][0]);
             if (!verifyResult)
             {
                 return Unauthorized();

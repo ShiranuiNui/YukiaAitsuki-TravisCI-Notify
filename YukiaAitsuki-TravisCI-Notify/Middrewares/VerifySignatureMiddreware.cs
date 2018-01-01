@@ -12,16 +12,7 @@ namespace YukiaAitsuki_TravisCI_Notify.Middreware
         }
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Method != "GET")
-            {
-                var response = context.Response;
-                response.StatusCode = 405;
-                await response.WriteAsync("");
-            }
-            else
-            {
-                await next.Invoke(context);
-            }
+            await next.Invoke(context);
         }
     }
 }

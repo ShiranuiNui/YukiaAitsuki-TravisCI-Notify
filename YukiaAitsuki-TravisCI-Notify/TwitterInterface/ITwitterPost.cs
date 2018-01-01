@@ -4,7 +4,8 @@ namespace YukiaAitsuki_TravisCI_Notify.Twitter
 {
     public interface ITwitterPost
     {
-        Task PostSuccessfulStatus();
-        Task PostFailedStatus();
+        Task<long?> PostSuccessfulStatus(string url);
+        Task<long?> PostFailedStatus(string url);
+        Task DeleteStatus(int statusid);
     }
 }
