@@ -6,6 +6,6 @@ namespace YukiaAitsuki_TravisCI_Notify.Twitter
     {
         Task<long?> PostSuccessfulStatus(string url);
         Task<long?> PostFailedStatus(string url);
-        Task DeleteStatus(int statusid);
+        Task DeleteStatus(long statusid);
     }
 }
