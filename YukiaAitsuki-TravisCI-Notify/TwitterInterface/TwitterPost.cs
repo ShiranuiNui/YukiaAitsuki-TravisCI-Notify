@@ -16,7 +16,7 @@ namespace YukiaAitsuki_TravisCI_Notify.Twitter
             string accessToken = configuration.GetValue("TWITTER_ACCESSTOKEN", "");
             string accessSecret = configuration.GetValue("TWITTER_ACCESSSECRET", "");
             this.UserScreenName = configuration.GetValue("TWITTER_SCREEN_NAME", "");
-            this.NickName = configuration.GetValue("NICK_NAME", "");
+            this.NickName = configuration.GetValue("NICK_NAME", this.UserScreenName);
             this.TwitterToken = new Tokens(Tokens.Create(apiKey, apiSecret, accessToken, accessSecret));
         }
         public async Task<long?> PostSuccessfulStatus(string url)
@@ -24,10 +24,10 @@ namespace YukiaAitsuki_TravisCI_Notify.Twitter
             try
             {
                 string statusString = $"@{this.UserScreenName}\n" +
-                    "お疲れ様です。{this.NickName}さん。\n" +
+                    $"お疲れ様です。{this.NickName}さん。\n" +
                     "テストが成功したようですよ。これで一息付けますね。\n" +
                     "詳細はリンクからご確認下さい\n\n" +
-                    "{url}";
+                    $"{url}";
                 var result = await this.TwitterToken.Statuses.UpdateAsync(status => statusString);
                 if (result.Id != 0)
                 {
