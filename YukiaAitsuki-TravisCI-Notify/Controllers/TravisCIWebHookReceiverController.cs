@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using CoreTweet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using YukiaAitsuki_TravisCI_Notify.SignatureVerifier;
+using YukiaAitsuki_TravisCI_Notify.Twitter;
 
 namespace YukiaAitsuki_TravisCI_Notify.Controllers
 {
@@ -14,9 +17,11 @@ namespace YukiaAitsuki_TravisCI_Notify.Controllers
     public class TravisCIWebHookReceiverController : Controller
     {
         private IConfiguration configuration;
-        public TravisCIWebHookReceiverController(IConfiguration _configration)
+        private ITwitterPost twitterClient;
+        public TravisCIWebHookReceiverController(IConfiguration _configration, ITwitterPost _twitterClient)
         {
             this.configuration = _configration;
+            this.twitterClient = _twitterClient;
         }
 
         [HttpPost]
@@ -25,20 +30,18 @@ namespace YukiaAitsuki_TravisCI_Notify.Controllers
             string debug_signature = this.Request.Headers["Signature"][0];
             string payload = this.Request.Form["payload"];
 
-            var verifier = new SignatureVerifier.SignatureVerifier();
-            var verifyResult = await verifier.Post(payload, this.Request.Headers["Signature"][0]);
-            if (!verifyResult)
+            var jsonObject = JObject.Parse(payload);
+            int resultvalue = (int) jsonObject["result"];
+            string url = (string) jsonObject["build_url"];
+            long? twitterId = resultvalue == 0 ? await this.twitterClient.PostSuccessfulStatus(url) : await this.twitterClient.PostFailedStatus(url);
+            if (twitterId.HasValue && twitterId > 0)
             {
-                return Unauthorized();
+                return Ok();
             }
-            string apiKey = this.configuration.GetValue("TWITTER_APIKEY", "");
-            string apiSecret = this.configuration.GetValue("TWITTER_APISECRET", "");
-            string accessToken = this.configuration.GetValue("TWITTER_ACCESSTOKEN", "");
-            string accessSecret = this.configuration.GetValue("TWITTER_ACCESSSECRET", "");
-
-            var twitterToken = new CoreTweet.Tokens(Tokens.Create(apiKey, apiSecret, accessToken, accessSecret));
-            var tweetresult = await twitterToken.Statuses.UpdateAsync(new { status = "認証を確認しました" });
-            return Ok();
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

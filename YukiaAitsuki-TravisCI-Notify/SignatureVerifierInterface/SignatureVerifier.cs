@@ -18,13 +18,7 @@ namespace YukiaAitsuki_TravisCI_Notify.SignatureVerifier
                 using(var client = new HttpClient())
                 {
                     var verifyResult = await client.SendAsync(verifyRequest);
-                    if (verifyResult.IsSuccessStatusCode)
-                    {
-                        return true;
-                    }
-                    {
-                        return false;
-                    }
+                    return verifyResult.IsSuccessStatusCode;
                 }
             }
         }
