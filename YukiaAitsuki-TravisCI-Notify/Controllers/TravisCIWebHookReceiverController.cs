@@ -16,18 +16,15 @@ namespace YukiaAitsuki_TravisCI_Notify.Controllers
     [Route("receiver/[controller]")]
     public class TravisCIWebHookReceiverController : Controller
     {
-        private IConfiguration configuration;
         private ITwitterPost twitterClient;
-        public TravisCIWebHookReceiverController(IConfiguration _configration, ITwitterPost _twitterClient)
+        public TravisCIWebHookReceiverController(ITwitterPost _twitterClient)
         {
-            this.configuration = _configration;
             this.twitterClient = _twitterClient;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] string value)
         {
-            string debug_signature = this.Request.Headers["Signature"][0];
             string payload = this.Request.Form["payload"];
 
             var jsonObject = JObject.Parse(payload);
