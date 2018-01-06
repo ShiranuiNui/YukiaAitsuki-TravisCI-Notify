@@ -25,7 +25,7 @@ namespace YukiaAitsuki_TravisCI_Notify.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] string value)
         {
-            string payload = this.Request.Form["payload"];
+            string payload = string.IsNullOrEmpty(value) ? this.Request.Form["payload"].ToString() : value;
 
             var jsonObject = JObject.Parse(payload);
             int resultvalue = (int) jsonObject["result"];
